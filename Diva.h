@@ -11,7 +11,7 @@ typedef enum _DIVA_GRADE : uint32_t {
     Standard = 0x2,
     Great = 0x3,
     Excellent = 0x4,
-    Perfect = 0x4
+    Perfect = 0x5
 } DIVA_GRADE;
 typedef struct _DIVA_PV_DIF {
     unsigned int Difficulty;

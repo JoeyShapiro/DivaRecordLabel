@@ -7,6 +7,7 @@
 #include <string>
 #include <map>
 #include "Diva.h"
+#include <sqlite3.h>
 
 // MegaMix+ addresses
 const uint64_t DivaScoreBaseAddress = 0x00000001412EF568;
@@ -95,8 +96,8 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
         break;
     }
 
-    std::grade = "";
-    switch (expression)
+    std::string grade = "";
+    switch (DivaGrade)
     {
     case Failed:
         grade = "failed";
@@ -108,10 +109,11 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
         grade = "standard";
         break;
     case Great:
-        graade = "great";
+        grade = "great";
         break;
     case Excellent:
         grade = "excellent";
+        break;
     case Perfect:
         grade = "perfect";
         break;
@@ -122,22 +124,6 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
 
     if (!postScore)
         return original_PrintResult(a1);
-
-    //// Create JSON with all results that will be sent to the bot
-    //nlohmann::json results = {
-    //    {"pvId", DivaPVId.Id},
-    //    {"pvName", DivaTitle},
-    //    {"pvDifficulty", DivaDif},
-    //    {"totalScore", DivaScore.TotalScore},
-    //    {"completionRate", DivaStat.CompletionRate},
-    //    {"scoreGrade", DivaGrade},
-    //    {"combo", DivaScore.Combo},
-    //    {"cool", DivaScore.Cool},
-    //    {"fine", DivaScore.Fine},
-    //    {"safe", DivaScore.Safe},
-    //    {"sad", DivaScore.Sad},
-    //    {"worst", DivaScoreWorst}
-    //};
     if (consoleEnabled)
         printf("post: console: %d %s", DivaPVId.Id, DivaTitle.c_str());
     printf("%d %s", DivaPVId.Id, DivaTitle.c_str());
