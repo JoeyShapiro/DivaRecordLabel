@@ -22,12 +22,7 @@ const uint64_t DivaCurrentPVDifficultyAddress = 0x00000001412B634C;
 // SongLimitPatch 1.02 ONLY
 //const uint64_t DivaCurrentPVDifficultyAddress = 0x00000001423157AC;
 
-const std::string ApiEndpoint = "<REDACTED>";
 const std::string ConfigFileName = "config.toml";
-const std::string ConfigDiscordUidName = "discordUid";
-
-int DiscordSdkTimeoutCounterLimit = 10;
-
 bool consoleEnabled = false;
 
 void* DivaScoreTrigger = sigScan(
