@@ -40,32 +40,21 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
     DIVA_SCORE DivaScore = *(DIVA_SCORE*)DivaScoreBaseAddress;
     int DivaScoreWorst = *(int*)DivaScoreWorstCounterAddress;
     DIVA_STAT DivaStat = *(DIVA_STAT*)DivaScoreCompletionRateAddress;
-    std::string& DivaTitle = *(std::string*)DivaCurrentPVTitleAddress;
     DIVA_PV_ID DivaPVId = *(DIVA_PV_ID*)DivaCurrentPVIdAddress;
     DIVA_DIFFICULTY DivaDif = *(_DIVA_DIFFICULTY*)DivaCurrentPVDifficultyAddress;
     DIVA_GRADE DivaGrade = *(_DIVA_GRADE*)DivaScoreGradeAddress;
-
-    std::string pvTitle = DivaTitle;
-
-    int i = 0;
-    uint64_t ptr = *(uint64_t*)DivaCurrentPVTitleAddress;
-    printf("%llu\n", ptr);
-    char *value = (char*)ptr;
-    printf("value: %s\n", value);
+    uint64_t ptrPVTitle = *(uint64_t*)DivaCurrentPVTitleAddress;
+    char *pvTitle = (char*)ptrPVTitle;
 
     // Client-side processing of whether or not to send the results to ShareDiva bot
     bool postScore = false;
-
-    if (consoleEnabled)
-        printf("console: %d %s\n", DivaPVId.Id, pvTitle.c_str());
-    printf("%d %s\n", DivaPVId.Id, pvTitle.c_str());
 
     if (consoleEnabled)
     {
         printf("score: Total: %d; Combo: %d; Cool: %d; Fine: %d; Safe: %d; Sad: %d; Worst: %d\n", DivaScore.TotalScore, DivaScore.Combo, DivaScore.Cool, DivaScore.Fine, DivaScore.Safe, DivaScore.Sad, DivaScore.Worst);
         printf("worst: %d\n", DivaScoreWorst);
         printf("completion rate: %f\n", DivaStat.CompletionRate);
-        printf("ID: %d; Title: %s\n", DivaPVId.Id, pvTitle.c_str());
+        printf("ID: %d; Title: %s\n", DivaPVId.Id, pvTitle);
         printf("difficulty: %d\n", DivaDif);
         printf("grade: %d\n", DivaGrade);
     }
@@ -92,7 +81,7 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
             postScore = true;
         break;
     case ExExtreme:
-        difficulty = "exextreme";
+        difficulty = "extraExtreme";
         if (DivaStat.CompletionRate >= 65.0F)
             postScore = true;
         break;
@@ -132,9 +121,9 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
 
     if (!postScore)
         return original_PrintResult(a1);
+
     if (consoleEnabled)
-        printf("post: console: %d %s", DivaPVId.Id, DivaTitle.c_str());
-    printf("%d %s", DivaPVId.Id, DivaTitle.c_str());
+        printf("post: console: %d", DivaPVId.Id);
 
     return original_PrintResult(a1);
 };
