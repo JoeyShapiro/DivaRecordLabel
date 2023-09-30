@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <SigScan.h>
 #include <Psapi.h>
+#include <stdio.h>
 bool sigValid = true;
 
 MODULEINFO moduleInfo;
@@ -19,6 +20,7 @@ const MODULEINFO& getModuleInfo()
 
 void* sigScan(const char* signature, const char* mask)
 {
+    printf("hello\n");
     const MODULEINFO& info = getModuleInfo();
     const size_t length = strlen(mask);
 
@@ -37,6 +39,7 @@ void* sigScan(const char* signature, const char* mask)
             return memory;
     }
 
+    printf("failed\n");
     return nullptr;
 }
 
