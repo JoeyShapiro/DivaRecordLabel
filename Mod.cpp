@@ -58,7 +58,7 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
         printf("completion rate: %d\n", DivaStat.CompletionRate);
         printf("ID: %d; Title: %s\n", DivaPVId.Id, DivaTitle);
         printf("difficulty: %d\n", DivaDif);
-        printf("grad: %d\n", DivaGrad);
+        printf("grade: %d\n", DivaGrade);
     }
 
     // post score is if you passed
