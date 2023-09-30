@@ -10,12 +10,12 @@
 #include <sqlite3.h>
 
 // MegaMix+ addresses
-const uint64_t DivaScoreBaseAddress = 0x00000001412EF568;
+const uint64_t DivaCurrentPVIdAddress         = 0x00000001412C2340;
+const uint64_t DivaScoreBaseAddress           = 0x00000001412EF568;
 const uint64_t DivaScoreCompletionRateAddress = 0x00000001412EF634;
-const uint64_t DivaScoreWorstCounterAddress = 0x00000001416E2D40; // For whatever reason the "worst" counter is stored separately from the rest of the hit counters
-const uint64_t DivaScoreGradeAddress = 0x00000001416E2D00;
-const uint64_t DivaCurrentPVTitleAddress = 0x00000001412EF228;
-const uint64_t DivaCurrentPVIdAddress = 0x00000001412C2340;
+const uint64_t DivaScoreWorstCounterAddress   = 0x00000001416E2D40; // For whatever reason the "worst" counter is stored separately from the rest of the hit counters
+const uint64_t DivaScoreGradeAddress          = 0x00000001416E2D00;
+const uint64_t DivaCurrentPVTitleAddress      = 0x00000001412EF228;
 
 // Non-SongLimitPatch 1.02
 const uint64_t DivaCurrentPVDifficultyAddress = 0x00000001412B634C;
@@ -45,19 +45,27 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
     DIVA_DIFFICULTY DivaDif = *(_DIVA_DIFFICULTY*)DivaCurrentPVDifficultyAddress;
     DIVA_GRADE DivaGrade = *(_DIVA_GRADE*)DivaScoreGradeAddress;
 
+    std::string pvTitle = DivaTitle;
+
+    int i = 0;
+    uint64_t ptr = *(uint64_t*)DivaCurrentPVTitleAddress;
+    printf("%llu\n", ptr);
+    char *value = (char*)ptr;
+    printf("value: %s\n", value);
+
     // Client-side processing of whether or not to send the results to ShareDiva bot
     bool postScore = false;
 
     if (consoleEnabled)
-        printf("console: %d %s", DivaPVId.Id, DivaTitle.c_str());
-    printf("%d %s", DivaPVId.Id, DivaTitle.c_str());
+        printf("console: %d %s\n", DivaPVId.Id, pvTitle.c_str());
+    printf("%d %s\n", DivaPVId.Id, pvTitle.c_str());
 
     if (consoleEnabled)
     {
         printf("score: Total: %d; Combo: %d; Cool: %d; Fine: %d; Safe: %d; Sad: %d; Worst: %d\n", DivaScore.TotalScore, DivaScore.Combo, DivaScore.Cool, DivaScore.Fine, DivaScore.Safe, DivaScore.Sad, DivaScore.Worst);
         printf("worst: %d\n", DivaScoreWorst);
         printf("completion rate: %f\n", DivaStat.CompletionRate);
-        printf("ID: %d; Title: %s\n", DivaPVId.Id, DivaTitle.c_str());
+        printf("ID: %d; Title: %s\n", DivaPVId.Id, pvTitle.c_str());
         printf("difficulty: %d\n", DivaDif);
         printf("grade: %d\n", DivaGrade);
     }
