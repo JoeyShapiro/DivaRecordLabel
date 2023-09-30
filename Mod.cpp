@@ -51,23 +51,72 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
         printf("console: %d %s", DivaPVId.Id, DivaTitle.c_str());
     printf("%d %s", DivaPVId.Id, DivaTitle.c_str());
 
+    if (consoleEnabled)
+    {
+        printf("score: Total: %d; Combo: %d; Cool: %d; Fine: %d; Safe: %d; Sad: %d; Worst: %d\n", DivaScore.TotalScore, DivaScore.Combo, DivaScore.Cool, DivaScore.Fine, DivaScore.Safe, DivaScore.Sad, DivaScore.Worst);
+        printf("worst: %d\n", DivaScoreWorst);
+        printf("completion rate: %d\n", DivaStat.CompletionRate);
+        printf("ID: %d; Title: %s\n", DivaPVId.Id, DivaTitle);
+        printf("difficulty: %d\n", DivaDif);
+        printf("grad: %d\n", DivaGrad);
+    }
+
+    // post score is if you passed
+    // TODO i dont think these completion values are correct
+    // could use int in table, and do joins, but that would be complicated
+    std::string difficulty = "";
     switch (DivaDif)
     {
     case Normal:
+        difficulty = "normal";
         if (DivaStat.CompletionRate >= 50.0F)
             postScore = true;
         break;
     case Hard:
+        difficulty = "hard";
         if (DivaStat.CompletionRate >= 55.0F)
             postScore = true;
         break;
     case Extreme:
+        difficulty = "extreme";
+        if (DivaStat.CompletionRate >= 65.0F)
+            postScore = true;
+        break;
     case ExExtreme:
+        difficulty = "exextreme";
         if (DivaStat.CompletionRate >= 65.0F)
             postScore = true;
         break;
     case Easy:
+        difficulty = "easy";
+        break;
     default:
+        difficulty = "unknown";
+        break;
+    }
+
+    std::grade = "";
+    switch (expression)
+    {
+    case Failed:
+        grade = "failed";
+        break;
+    case Cheap:
+        grade = "cheap";
+        break;
+    case Standard:
+        grade = "standard";
+        break;
+    case Great:
+        graade = "great";
+        break;
+    case Excellent:
+        grade = "excellent";
+    case Perfect:
+        grade = "perfect";
+        break;
+    default:
+        grade = "unknown";
         break;
     }
 
