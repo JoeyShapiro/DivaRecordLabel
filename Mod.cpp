@@ -56,8 +56,8 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
     {
         printf("score: Total: %d; Combo: %d; Cool: %d; Fine: %d; Safe: %d; Sad: %d; Worst: %d\n", DivaScore.TotalScore, DivaScore.Combo, DivaScore.Cool, DivaScore.Fine, DivaScore.Safe, DivaScore.Sad, DivaScore.Worst);
         printf("worst: %d\n", DivaScoreWorst);
-        printf("completion rate: %d\n", DivaStat.CompletionRate);
-        printf("ID: %d; Title: %s\n", DivaPVId.Id, DivaTitle);
+        printf("completion rate: %f\n", DivaStat.CompletionRate);
+        printf("ID: %d; Title: %s\n", DivaPVId.Id, DivaTitle.c_str());
         printf("difficulty: %d\n", DivaDif);
         printf("grade: %d\n", DivaGrade);
     }
