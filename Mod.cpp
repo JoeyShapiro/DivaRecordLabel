@@ -59,6 +59,37 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
         printf("grade: %d\n", DivaGrade);
     }
 
+    sqlite3 *db;
+    char *zErrMsg = 0;
+    int rc;
+    char *sql;
+    const char* data = "Callback function called";
+
+    // Create a sqlite3 object
+    rc = sqlite3_open("DivaRecordLabel.sqlite", &db);
+
+    if (rc) {
+        printf("Can't open database: %s\n", sqlite3_errmsg(db));
+   } else {
+        printf("Opened database successfully\n");
+
+        /* Create SQL statement */
+        // TODO should do prepared just cause
+        sql = "SELECT * FROM scores";
+
+        /* Execute SQL statement */
+        rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
+
+        if( rc != SQLITE_OK ) {
+            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            sqlite3_free(zErrMsg);
+        } else {
+            fprintf(stdout, "Operation done successfully\n");
+        }
+   }
+   
+   sqlite3_close(db);
+
     // post score is if you passed
     // TODO i dont think these completion values are correct
     // could use int in table, and do joins, but that would be complicated
