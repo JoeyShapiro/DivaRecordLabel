@@ -51,44 +51,14 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
 
     if (consoleEnabled)
     {
-        printf("score: Total: %d; Combo: %d; Cool: %d; Fine: %d; Safe: %d; Sad: %d; Worst: %d\n", DivaScore.TotalScore, DivaScore.Combo, DivaScore.Cool, DivaScore.Fine, DivaScore.Safe, DivaScore.Sad, DivaScore.Worst);
+        printf("score: Total: %d; Combo: %d; Cool: %d; Fine: %d; Safe: %d; Sad: %d; Worst: %d\n",
+            DivaScore.TotalScore, DivaScore.Combo, DivaScore.Cool, DivaScore.Fine, DivaScore.Safe, DivaScore.Sad, DivaScore.Worst);
         printf("worst: %d\n", DivaScoreWorst);
         printf("completion rate: %f\n", DivaStat.CompletionRate);
         printf("ID: %d; Title: %s\n", DivaPVId.Id, pvTitle);
         printf("difficulty: %d\n", DivaDif);
         printf("grade: %d\n", DivaGrade);
     }
-
-    sqlite3 *db;
-    char *zErrMsg = 0;
-    int rc;
-    char *sql;
-    const char* data = "Callback function called";
-
-    // Create a sqlite3 object
-    rc = sqlite3_open("DivaRecordLabel.sqlite", &db);
-
-    if (rc) {
-        printf("Can't open database: %s\n", sqlite3_errmsg(db));
-   } else {
-        printf("Opened database successfully\n");
-
-        /* Create SQL statement */
-        // TODO should do prepared just cause
-        sql = "SELECT * FROM scores";
-
-        /* Execute SQL statement */
-        rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
-
-        if( rc != SQLITE_OK ) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
-            sqlite3_free(zErrMsg);
-        } else {
-            fprintf(stdout, "Operation done successfully\n");
-        }
-   }
-   
-   sqlite3_close(db);
 
     // post score is if you passed
     // TODO i dont think these completion values are correct
@@ -149,6 +119,37 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
         grade = "unknown";
         break;
     }
+
+    sqlite3 *db;
+    char *zErrMsg = 0;
+    int rc;
+    char *sql;
+    const char* data = "Callback function called";
+
+    // Create a sqlite3 object
+    rc = sqlite3_open("DivaRecordLabel.sqlite", &db);
+
+    if (rc) {
+        printf("Can't open database: %s\n", sqlite3_errmsg(db));
+    } else {
+        printf("Opened database successfully\n");
+
+        /* Create SQL statement */
+        // TODO should do prepared just cause
+        sql = "SELECT * FROM scores";
+
+        /* Execute SQL statement */
+        rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
+
+        if( rc != SQLITE_OK ) {
+            printf("SQL error: %s\n", zErrMsg);
+            sqlite3_free(zErrMsg);
+        } else {
+            printf("Operation done successfully\n");
+        }
+    }
+   
+   sqlite3_close(db);
 
     if (!postScore)
         return original_PrintResult(a1);
