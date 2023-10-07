@@ -9,6 +9,9 @@
 #include "Diva.h"
 #include <sqlite3.h>
 
+#define MOD "DivaRecordLabel"
+#define LOG(f_, ...) printf("[" MOD "] " f_, ##__VA_ARGS__)
+
 // MegaMix+ addresses
 const uint64_t DivaCurrentPVIdAddress         = 0x00000001412C2340;
 const uint64_t DivaScoreBaseAddress           = 0x00000001412EF568;
@@ -33,7 +36,7 @@ void* DivaScoreTrigger = sigScan(
 
 static int callback(void* NotUsed, int argc, char** argv, char** azColName)
 {
-    printf("Callback function called");
+    LOG("Callback function called\n");
     int i;
     for (i = 0; i < argc; i++) {
         printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
@@ -43,10 +46,10 @@ static int callback(void* NotUsed, int argc, char** argv, char** azColName)
 }
 
 HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
-    printf("hello, joey is awesome and great\n");
+    LOG("hello, joey is awesome and great\n");
 
     if (consoleEnabled)
-		printf("console: hello, joey is awesome and great\n");
+		LOG("console: hello, joey is awesome and great\n");
 
     DIVA_SCORE DivaScore = *(DIVA_SCORE*)DivaScoreBaseAddress;
     int DivaScoreWorst = *(int*)DivaScoreWorstCounterAddress;
@@ -62,13 +65,13 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
 
     if (consoleEnabled)
     {
-        printf("score: Total: %d; Combo: %d; Cool: %d; Fine: %d; Safe: %d; Sad: %d; Worst: %d\n",
+        LOG("score: Total: %d; Combo: %d; Cool: %d; Fine: %d; Safe: %d; Sad: %d; Worst: %d\n",
             DivaScore.TotalScore, DivaScore.Combo, DivaScore.Cool, DivaScore.Fine, DivaScore.Safe, DivaScore.Sad, DivaScore.Worst);
-        printf("worst: %d\n", DivaScoreWorst);
-        printf("completion rate: %f\n", DivaStat.CompletionRate);
-        printf("ID: %d; Title: %s\n", DivaPVId.Id, pvTitle);
-        printf("difficulty: %d\n", DivaDif);
-        printf("grade: %d\n", DivaGrade);
+        LOG("worst: %d\n", DivaScoreWorst);
+        LOG("completion rate: %f\n", DivaStat.CompletionRate);
+        LOG("ID: %d; Title: %s\n", DivaPVId.Id, pvTitle);
+        LOG("difficulty: %d\n", DivaDif);
+        LOG("grade: %d\n", DivaGrade);
     }
 
     // post score is if you passed
@@ -139,9 +142,9 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
     rc = sqlite3_open("DivaRecordLabel.sqlite", &db);
 
     if (rc) {
-        printf("Can't open database: %s\n", sqlite3_errmsg(db));
+        LOG("Can't open database: %s\n", sqlite3_errmsg(db));
     } else {
-        printf("Opened database successfully\n");
+        LOG("Opened database successfully\n");
 
         /* Create SQL statement */
         // INSERT INTO scores (title, cool, fine, safe, sad, worst, difficulty, completion, pv_id, total_score, combo, grade)
@@ -175,17 +178,17 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
         // i cant get error msg, but i guess code is fine
         rc = sqlite3_step(stmt);
         if (rc != SQLITE_DONE) {
-            printf("SQL error: %s\n", szErrMsg);
+            LOG("SQL error: %s\n", szErrMsg);
         }
 
         // close the statement
         sqlite3_finalize(stmt);
 
         if( rc != SQLITE_OK ) {
-            printf("SQL error: %s\n", szErrMsg);
+            LOG("SQL error: %s\n", szErrMsg);
             sqlite3_free(szErrMsg);
         } else {
-            printf("Operation done successfully\n");
+            LOG("Operation done successfully\n");
         }
     }
    
@@ -195,7 +198,7 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
         return original_PrintResult(a1);
 
     if (consoleEnabled)
-        printf("post: console: %d", DivaPVId.Id);
+        LOG("post: console: %d", DivaPVId.Id);
 
     return original_PrintResult(a1);
 };
