@@ -1,0 +1,9 @@
+enabled = true
+name = "Diva Record Label"
+description = "Record results to a sqlite file"
+version = "1.0"
+date = "09.30.2023"
+author = "JoeyShapiro"
+
+include = ["."]
+dll = ["DivaRecordLabel.dll"]

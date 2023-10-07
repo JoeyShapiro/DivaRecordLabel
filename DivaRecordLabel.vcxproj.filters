@@ -44,5 +44,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+    <None Include="config.toml" />
+    <None Include="postbuild.bat">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
