@@ -55,7 +55,7 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
     DIVA_DIFFICULTY DivaDif = *(_DIVA_DIFFICULTY*)DivaCurrentPVDifficultyAddress;
     DIVA_GRADE DivaGrade = *(_DIVA_GRADE*)DivaScoreGradeAddress;
     uint64_t ptrPVTitle = *(uint64_t*)DivaCurrentPVTitleAddress;
-    char *pvTitle = (char*)ptrPVTitle;
+    std::string pvTitle = (char*)ptrPVTitle;
 
     // Client-side processing of whether or not to send the results to ShareDiva bot
     bool postScore = false;
@@ -144,10 +144,42 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
         printf("Opened database successfully\n");
 
         /* Create SQL statement */
-        const char *sql = "SELECT * FROM scores";
+        // INSERT INTO scores (title, cool, fine, safe, sad, worst, difficulty, completion, pv_id, total_score, combo, grade)
+        // VALUES ('luka', 50, 99, 0, 29, 28, 'hard', 60.7, 5489, 543985, 345, 'great');
+        std::string sql = "INSERT INTO scores (pv_id, title, difficulty, total_score, completion, grade, combo, cool, fine, safe, sad, worst)";
+        std::string sql += " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        sqlite3_stmt *stmt;
+        sqlite3_prepare_v2(
+            db,             // the handle to your (opened and ready) database
+            sql.c_str(),    // the sql statement, utf-8 encoded
+            sql.length(),   // max length of sql statement
+            &stmt,          // this is an "out" parameter, the compiled statement goes here
+            nullptr
+        );
 
-        /* Execute SQL statement */
-        rc = sqlite3_exec(db, sql, callback, 0, &szErrMsg);
+        // bind parameter
+        sqlite3_bind_int(stmt, 1, DivaPVId.Id);
+        sqlite3_bind_text(stmt, 2, pvTitle.c_str(), pvTitle.length(), SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 3, difficulty.c_str(), difficulty.length(), SQLITE_TRANSIENT);
+        sqlite3_bind_int(stmt, 4, DivaScore.TotalScore);
+        sqlite3_bind_double(stmt, 5, DivaStat.CompletionRate);
+        sqlite3_bind_text(stmt, 6, grade.c_str(), grade.length(), SQLITE_TRANSIENT);
+        sqlite3_bind_int(stmt, 7, DivaScore.Combo);
+        sqlite3_bind_int(stmt, 8, DivaScore.Cool);
+        sqlite3_bind_int(stmt, 9, DivaScore.Fine);
+        sqlite3_bind_int(stmt, 10, DivaScore.Safe);
+        sqlite3_bind_int(stmt, 11, DivaScore.Sad);
+        sqlite3_bind_int(stmt, 12, DivaScore.Worst);
+
+        // execute the statement
+        // i cant get error msg, but i guess code is fine
+        rc = sqlite3_step(stmt);
+        if (rc != SQLITE_DONE) {
+            printf("SQL error: %s\n", szErrMsg);
+        }
+
+        // close the statement
+        sqlite3_finalize(stmt);
 
         if( rc != SQLITE_OK ) {
             printf("SQL error: %s\n", szErrMsg);
