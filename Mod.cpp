@@ -31,6 +31,17 @@ void* DivaScoreTrigger = sigScan(
     "xxxx?xxxx?xxxx?xxxxxxxxxxxxxxxxxxx????xxxxxxxxxxxx?????xx????"
 );
 
+static int callback(void* NotUsed, int argc, char** argv, char** azColName)
+{
+    printf("Callback function called");
+    int i;
+    for (i = 0; i < argc; i++) {
+        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+    }
+    printf("\n");
+    return 0;
+}
+
 HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
     printf("hello, joey is awesome and great\n");
 
@@ -121,10 +132,8 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
     }
 
     sqlite3 *db;
-    char *zErrMsg = 0;
+    char *szErrMsg = 0;
     int rc;
-    char *sql;
-    const char* data = "Callback function called";
 
     // Create a sqlite3 object
     rc = sqlite3_open("DivaRecordLabel.sqlite", &db);
@@ -135,15 +144,14 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
         printf("Opened database successfully\n");
 
         /* Create SQL statement */
-        // TODO should do prepared just cause
-        sql = "SELECT * FROM scores";
+        const char *sql = "SELECT * FROM scores";
 
         /* Execute SQL statement */
-        rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
+        rc = sqlite3_exec(db, sql, callback, 0, &szErrMsg);
 
         if( rc != SQLITE_OK ) {
-            printf("SQL error: %s\n", zErrMsg);
-            sqlite3_free(zErrMsg);
+            printf("SQL error: %s\n", szErrMsg);
+            sqlite3_free(szErrMsg);
         } else {
             printf("Operation done successfully\n");
         }
