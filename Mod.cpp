@@ -10,7 +10,9 @@
 #include <sqlite3.h>
 
 #define MOD "DivaRecordLabel"
-#define LOG(f_, ...) printf("[" MOD "] " f_, ##__VA_ARGS__)
+#define LOG(f_, ...) printf("[" MOD "] " f_, __VA_ARGS__)
+
+// what does ## do
 
 // MegaMix+ addresses
 const uint64_t DivaCurrentPVIdAddress         = 0x00000001412C2340;
@@ -69,7 +71,7 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
             DivaScore.TotalScore, DivaScore.Combo, DivaScore.Cool, DivaScore.Fine, DivaScore.Safe, DivaScore.Sad, DivaScore.Worst);
         LOG("worst: %d\n", DivaScoreWorst);
         LOG("completion rate: %f\n", DivaStat.CompletionRate);
-        LOG("ID: %d; Title: %s\n", DivaPVId.Id, pvTitle);
+        LOG("ID: %d; Title: %s\n", DivaPVId.Id, pvTitle.c_str());
         LOG("difficulty: %d\n", DivaDif);
         LOG("grade: %d\n", DivaGrade);
     }
@@ -135,7 +137,6 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
     }
 
     sqlite3 *db;
-    char *szErrMsg = 0;
     int rc;
 
     // Create a sqlite3 object
@@ -144,13 +145,11 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
     if (rc) {
         LOG("Can't open database: %s\n", sqlite3_errmsg(db));
     } else {
-        LOG("Opened database successfully\n");
-
         /* Create SQL statement */
         // INSERT INTO scores (title, cool, fine, safe, sad, worst, difficulty, completion, pv_id, total_score, combo, grade)
         // VALUES ('luka', 50, 99, 0, 29, 28, 'hard', 60.7, 5489, 543985, 345, 'great');
         std::string sql = "INSERT INTO scores (pv_id, title, difficulty, total_score, completion, grade, combo, cool, fine, safe, sad, worst)";
-        std::string sql += " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        sql += " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         sqlite3_stmt *stmt;
         sqlite3_prepare_v2(
             db,             // the handle to your (opened and ready) database
@@ -175,18 +174,15 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
         sqlite3_bind_int(stmt, 12, DivaScore.Worst);
 
         // execute the statement
-        // i cant get error msg, but i guess code is fine
         rc = sqlite3_step(stmt);
         if (rc != SQLITE_DONE) {
-            LOG("SQL error: %s\n", szErrMsg);
+            LOG("SQLite insert error: (%d) %s\n", rc, sqlite3_errmsg(db));
         }
 
         // close the statement
-        sqlite3_finalize(stmt);
-
+        rc = sqlite3_finalize(stmt);
         if( rc != SQLITE_OK ) {
-            LOG("SQL error: %s\n", szErrMsg);
-            sqlite3_free(szErrMsg);
+            LOG("SQLite finalize error: (%d) %s\n", rc, sqlite3_errmsg(db));
         } else {
             LOG("Operation done successfully\n");
         }

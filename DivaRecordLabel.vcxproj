@@ -124,7 +124,8 @@
       <AdditionalDependencies>detours.lib;sqlite3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>echo call "$(SolutionDir)postbuild.bat" "$(SolutionDir)" "$(Configuration)" "$(Platform)"</Command>
+      <Command>echo $(SolutionDir)postbuild.bat "$(SolutionDir)" "$(Configuration)" "$(Platform)"
+echo call "$(SolutionDir)postbuild.bat" "$(SolutionDir)" "$(Configuration)" "$(Platform)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
