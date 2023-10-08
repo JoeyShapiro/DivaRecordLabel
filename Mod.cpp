@@ -99,9 +99,9 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
     {
         LOG("score: Total: %d; Combo: %d; Cool: %d; Fine: %d; Safe: %d; Sad: %d; Worst: %d\n",
             DivaScore.TotalScore, DivaScore.Combo, DivaScore.Cool, DivaScore.Fine, DivaScore.Safe, DivaScore.Sad, DivaScore.Worst);
-        LOG("worst: %d\n", DivaScoreWorst);
+        LOG("worst: %d\n", DivaScoreWorst); // the other worst might be truncated or something
         LOG("completion rate: %f\n", DivaStat.CompletionRate);
-        LOG("ID: %d; Title: %s\n", DivaPVId.Id, pvTitle.c_str());
+        LOG("ID: %d; Title: %s\n", DivaPVId.Id, pvTitle.c_str()); // this still isnt always right
         LOG("difficulty: %d\n", DivaDif);
         LOG("grade: %d\n", DivaGrade);
     }
@@ -204,7 +204,7 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
         sqlite3_bind_int(stmt, 9, DivaScore.Fine);
         sqlite3_bind_int(stmt, 10, DivaScore.Safe);
         sqlite3_bind_int(stmt, 11, DivaScore.Sad);
-        sqlite3_bind_int(stmt, 12, DivaScore.Worst);
+        sqlite3_bind_int(stmt, 12, DivaScoreWorst);
 
         // execute the statement
         rc = sqlite3_step(stmt);
