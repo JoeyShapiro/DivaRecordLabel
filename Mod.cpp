@@ -47,6 +47,36 @@ static int callback(void* NotUsed, int argc, char** argv, char** azColName)
     return 0;
 }
 
+int create_sqlite(sqlite3 *db)
+{
+    int rc;
+    char* szErrMsg = 0;
+    const char* data = "Callback function called";
+    std::string sql = "create table scores"
+            "("
+            "    id          integer                             not null"
+            "    primary key autoincrement"
+            "    unique,"
+            "    date        timestamp default CURRENT_TIMESTAMP not null,"
+            "     pv_id       integer                             not null,"
+            "     title       text                                not null,"
+            "     difficulty  text                                not null,"
+            "     total_score integer                             not null,"
+            "     completion  real                                not null,"
+            "     grade       text                                not null,"
+            "    combo       integer                             not null,"
+            "      cool        integer                             not null,"
+            "     fine        integer                             not null,"
+            "     safe        integer                             not null,"
+            "   sad         integer                             not null,"
+            "    worst       integer                             not null"
+        "); ";
+    rc = sqlite3_exec(db, sql.c_str(), callback, (void*)data, &szErrMsg);
+    printf("%d %s\n", rc, sqlite3_errmsg(db));
+
+    return rc;
+}
+
 HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
     LOG("hello, joey is awesome and great\n");
 
@@ -140,11 +170,14 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
     int rc;
 
     // Create a sqlite3 object
-    rc = sqlite3_open("DivaRecordLabel.sqlite", &db);
+    // TODO check if file exists
+    // TODO get file from config, should start in mods/MOD
+    rc = sqlite3_open("mods/Diva Record Label/DivaRecordLabel.sqlite", &db);
 
     if (rc) {
         LOG("Can't open database: %s\n", sqlite3_errmsg(db));
     } else {
+        //create_sqlite(db);
         /* Create SQL statement */
         // INSERT INTO scores (title, cool, fine, safe, sad, worst, difficulty, completion, pv_id, total_score, combo, grade)
         // VALUES ('luka', 50, 99, 0, 29, 28, 'hard', 60.7, 5489, 543985, 345, 'great');
