@@ -217,6 +217,7 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
         sqlite3_bind_int(stmt, 12, DivaScoreWorst);
 
         // execute the statement
+        // TODO should it log an error if no logToConsole. i may not have a choice
         rc = sqlite3_step(stmt);
         if (rc != SQLITE_DONE) {
             LOG("SQLite insert error: (%d) %s\n", rc, sqlite3_errmsg(db));
