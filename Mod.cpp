@@ -90,7 +90,17 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
     DIVA_DIFFICULTY DivaDif = *(_DIVA_DIFFICULTY*)DivaCurrentPVDifficultyAddress;
     DIVA_GRADE DivaGrade = *(_DIVA_GRADE*)DivaScoreGradeAddress;
     uint64_t ptrPVTitle = *(uint64_t*)DivaCurrentPVTitleAddress;
-    std::string pvTitle = (char*)ptrPVTitle;
+
+    // it will either be a pointer, or this address
+	std::string pvTitle;
+	if (strlen((char*)DivaCurrentPVTitleAddress))
+	{
+        pvTitle = (char*)DivaCurrentPVTitleAddress;
+	}
+	else
+	{
+        pvTitle = (char*)ptrPVTitle;
+	}
 
     // Client-side processing of whether or not to send the results to ShareDiva bot
     bool postScore = false;
@@ -217,7 +227,7 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
         if( rc != SQLITE_OK ) {
             LOG("SQLite finalize error: (%d) %s\n", rc, sqlite3_errmsg(db));
         } else {
-            LOG("Operation done successfully\n");
+            LOG("Saved results of %s\n", pvTitle.c_str());
         }
     }
    
