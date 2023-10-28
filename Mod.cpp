@@ -95,7 +95,7 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
 	std::string pvTitle;
     // cant do strlen(addrerss) because song name could be shorter than 4B
     // cant check for x00; pointer is also null terminated
-    LOG("%p\n", ptrPVTitle);
+    LOG("%p %X\n", ptrPVTitle, ptrPVTitle);
 	if (ptrPVTitle < 602'353'664)
 	{
         pvTitle = (char*)ptrPVTitle;
