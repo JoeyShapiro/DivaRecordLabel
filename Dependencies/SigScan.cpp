@@ -23,6 +23,7 @@ void* sigScan(const char* signature, const char* mask)
     printf("hello\n");
     const MODULEINFO& info = getModuleInfo();
     const size_t length = strlen(mask);
+    printf("%d\n", info.SizeOfImage);
 
     for (size_t i = 0; i < info.SizeOfImage; i++)
     {

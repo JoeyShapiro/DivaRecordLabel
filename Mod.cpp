@@ -93,13 +93,16 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
 
     // it will either be a pointer, or this address
 	std::string pvTitle;
-	if (strlen((char*)DivaCurrentPVTitleAddress))
+    // cant do strlen(addrerss) because song name could be shorter than 4B
+    // cant check for x00; pointer is also null terminated
+    LOG("%p\n", ptrPVTitle);
+	if (ptrPVTitle < 602'353'664)
 	{
-        pvTitle = (char*)DivaCurrentPVTitleAddress;
+        pvTitle = (char*)ptrPVTitle;
 	}
 	else
 	{
-        pvTitle = (char*)ptrPVTitle;
+        pvTitle = (char*)DivaCurrentPVTitleAddress;
 	}
 
     // Client-side processing of whether or not to send the results to ShareDiva bot
