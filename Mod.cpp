@@ -197,8 +197,10 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
         /* Create SQL statement */
         // INSERT INTO scores (title, cool, fine, safe, sad, worst, difficulty, completion, pv_id, total_score, combo, grade)
         // VALUES ('luka', 50, 99, 0, 29, 28, 'hard', 60.7, 5489, 543985, 345, 'great');
-        std::string sql = "INSERT INTO scores (pv_id, title, difficulty, total_score, completion, grade, combo, cool, fine, safe, sad, worst)";
+        std::string sql = "BEGIN TRANSACTION;";
+        sql += "INSERT INTO scores (pv_id, title, difficulty, total_score, completion, grade, combo, cool, fine, safe, sad, worst)";
         sql += " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        sql += "END TRANSACTION;";
         sqlite3_stmt *stmt;
         sqlite3_prepare_v2(
             db,             // the handle to your (opened and ready) database
@@ -227,12 +229,6 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
         rc = sqlite3_step(stmt);
         if (rc != SQLITE_DONE) {
             LOG("SQLite insert error: (%d) %s\n", rc, sqlite3_errmsg(db));
-        }
-
-        // commit the changes
-        rc = sqlite3_commit(db);
-        if (rc != SQLITE_OK) {
-            LOG("SQLite commit error: (%d) %s\n", rc, sqlite3_errmsg(db));
         }
 
         // close the statement
