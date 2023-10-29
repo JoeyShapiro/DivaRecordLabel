@@ -36,6 +36,8 @@ void* DivaScoreTrigger = sigScan(
     "xxxx?xxxx?xxxx?xxxxxxxxxxxxxxxxxxx????xxxxxxxxxxxx?????xx????"
 );
 
+PROCESS_MEMORY_COUNTERS pmc;
+
 static int callback(void* NotUsed, int argc, char** argv, char** azColName)
 {
     LOG("Callback function called\n");
@@ -91,12 +93,16 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
     DIVA_GRADE DivaGrade = *(_DIVA_GRADE*)DivaScoreGradeAddress;
     uint64_t ptrPVTitle = *(uint64_t*)DivaCurrentPVTitleAddress;
 
+    GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(PROCESS_MEMORY_COUNTERS));
+
     // it will either be a pointer, or this address
 	std::string pvTitle;
     // cant do strlen(addrerss) because song name could be shorter than 4B
     // cant check for x00; pointer is also null terminated
     LOG("%p %X\n", ptrPVTitle, ptrPVTitle);
-	if (ptrPVTitle < 602'353'664)
+    LOG("set size: %d %d\n", pmc.WorkingSetSize, (uint64_t)pmc.WorkingSetSize);
+    // oh yeah, this needs to keep updating
+    if (ptrPVTitle < (uint64_t)(pmc.WorkingSetSize+pmc.PagefileUsage))
 	{
         pvTitle = (char*)ptrPVTitle;
 	}
