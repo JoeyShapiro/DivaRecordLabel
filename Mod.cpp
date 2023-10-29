@@ -229,6 +229,12 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
             LOG("SQLite insert error: (%d) %s\n", rc, sqlite3_errmsg(db));
         }
 
+        // commit the changes
+        rc = sqlite3_commit(db);
+        if (rc != SQLITE_OK) {
+            LOG("SQLite commit error: (%d) %s\n", rc, sqlite3_errmsg(db));
+        }
+
         // close the statement
         rc = sqlite3_finalize(stmt);
         if( rc != SQLITE_OK ) {
