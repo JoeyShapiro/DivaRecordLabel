@@ -6,7 +6,6 @@
 bool sigValid = true;
 
 MODULEINFO moduleInfo;
-PROCESS_MEMORY_COUNTERS pmc2;
 
 const MODULEINFO& getModuleInfo()
 {
@@ -14,27 +13,7 @@ const MODULEINFO& getModuleInfo()
         return moduleInfo;
 
     ZeroMemory(&moduleInfo, sizeof(MODULEINFO));
-    printf("id: %d\n", GetCurrentProcessId());
     GetModuleInformation(GetCurrentProcess(), GetModuleHandle(nullptr), &moduleInfo, sizeof(MODULEINFO));
-    GetProcessMemoryInfo(GetCurrentProcess(), &pmc2, sizeof(PROCESS_MEMORY_COUNTERS));
-
-    printf( "\tPageFaultCount: 0x%08X\n", pmc2.PageFaultCount );
-    printf( "\tPeakWorkingSetSize: 0x%08X\n", 
-                pmc2.PeakWorkingSetSize );
-    // i think i want to watch this one
-    printf( "\tWorkingSetSize: 0x%08X\n", pmc2.WorkingSetSize );
-    printf("\tWorkingSetSize: %d\n", pmc2.WorkingSetSize);
-    printf( "\tQuotaPeakPagedPoolUsage: 0x%08X\n", 
-                pmc2.QuotaPeakPagedPoolUsage );
-    printf( "\tQuotaPagedPoolUsage: 0x%08X\n", 
-                pmc2.QuotaPagedPoolUsage );
-    printf( "\tQuotaPeakNonPagedPoolUsage: 0x%08X\n", 
-                pmc2.QuotaPeakNonPagedPoolUsage );
-    printf( "\tQuotaNonPagedPoolUsage: 0x%08X\n", 
-                pmc2.QuotaNonPagedPoolUsage );
-    printf( "\tPagefileUsage: 0x%08X\n", pmc2.PagefileUsage ); 
-    printf( "\tPeakPagefileUsage: 0x%08X\n", 
-                pmc2.PeakPagefileUsage );
 
     return moduleInfo;
 }
