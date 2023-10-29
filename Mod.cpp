@@ -237,7 +237,7 @@ HOOK(int, __fastcall, _PrintResult, DivaScoreTrigger, int a1) {
             LOG("Saved results of %s\n", pvTitle.c_str());
         }
 
-        rc = sqlite3_exec(db, "SELECT COUNT(*) FROM scores", callback, (void*)data, &szErrMsg);
+        rc = sqlite3_exec(db, "SELECT COUNT(*) FROM scores", callback, NULL, NULL);
         if (rc != SQLITE_OK) {
             LOG("SQLite select error: (%d) %s\n", rc, sqlite3_errmsg(db));
         }
