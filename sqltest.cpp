@@ -74,6 +74,8 @@ int main() {
 
         const char *sqls = "SELECT * FROM scores";
         sqlite3_exec(db, sqls, callback, (void*)data, &zErrMsg);
+
+        sqlite3_commit_hook(db, NULL, NULL);
    }
    sqlite3_close(db);
 
